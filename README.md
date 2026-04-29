@@ -1,5 +1,5 @@
-📘 Telephone Directory GUI System
-Project Description
+📘 **Telephone Directory GUI System
+Project Description**
 
 The Telephone Directory GUI System is a Java desktop application that allows users to manage contacts through a graphical user interface. Users can add, update, delete, and search for contacts while ensuring that each name is unique.
 
