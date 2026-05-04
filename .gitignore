@@ -1,0 +1,15 @@
+# IntelliJ auto generated files
+.idea/
+out/
+*.class
+*.iml
+
+# Old text file storage
+contacts.txt
+
+# Environment/OS files
+.DS_Store
+Thumbs.db
+
+# Database credentials
+src/config.properties
