@@ -347,3 +347,22 @@ public class MainGUI extends JFrame {
         ));
     }
 }
+// Feature added by Hayat Shekur
+// Double-click table row to auto-fill fields + show status
+contactTable.addMouseListener(new java.awt.event.MouseAdapter() {
+    public void mouseClicked(java.awt.event.MouseEvent evt) {
+        if (evt.getClickCount() == 2) {
+            int row = contactTable.getSelectedRow();
+
+            if (row >= 0) {
+                String name = (String) tableModel.getValueAt(row, 0);
+                String phone = (String) tableModel.getValueAt(row, 1);
+
+                nameField.setText(name);
+                phoneField.setText(phone);
+
+                setStatus("Selected: " + name);
+            }
+        }
+    }
+});
