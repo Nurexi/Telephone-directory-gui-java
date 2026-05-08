@@ -110,7 +110,8 @@ public class MainGUI extends JFrame {
         contactTable.setFont(new Font("SansSerif", Font.PLAIN, 13));
         contactTable.setGridColor(new Color(220, 220, 220));
         contactTable.setShowGrid(true);
-
+        contactTable.setSelectionBackground(new Color(41, 128, 185));
+        contactTable.setSelectionForeground(Color.WHITE);
         contactTable.getTableHeader().setFont(
                 new Font("SansSerif", Font.BOLD, 13));
         contactTable.getTableHeader().setBackground(
