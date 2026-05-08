@@ -60,6 +60,11 @@ public class MainGUI extends JFrame {
         JLabel phoneLabel = new JLabel("Phone:");
         phoneField        = new JTextField(16);
 
+                // Developed by Siham Desta
+         // Added tooltips for better user experience
+         nameField.setToolTipText("Enter contact name");
+         phoneField.setToolTipText("Enter phone number");
+
         nameLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
         phoneLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
         nameField.setFont(new Font("SansSerif", Font.PLAIN, 13));
@@ -91,6 +96,11 @@ public class MainGUI extends JFrame {
         buttonRow.add(updateBtn);
         buttonRow.add(searchBtn);
         buttonRow.add(clearBtn);
+    addBtn.setToolTipText("Add a new contact");
+    deleteBtn.setToolTipText("Delete selected contact");
+    updateBtn.setToolTipText("Update contact phone number");
+    searchBtn.setToolTipText("Search contact by name");
+    clearBtn.setToolTipText("Clear all input fields");
 
         topPanel.add(inputRow);
         topPanel.add(buttonRow);
