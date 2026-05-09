@@ -227,4 +227,152 @@ public class MainGUI extends JFrame {
         hdr.add(right, BorderLayout.EAST);
         return hdr;
     }
+}
     
+ // ─────────────────────────────────────────────────
+    //  Improved by HAYAT SHEKUR
+    // ─────────────────────────────────────────────────
+    private JPanel buildStats() {
+        JPanel row = new JPanel(new GridLayout(1, 3, 16, 0));
+        row.setBackground(BG_MAIN);
+        row.setBorder(new EmptyBorder(0, 28, 0, 28));
+
+        totalVal = new JLabel("0");
+        lastVal  = new JLabel("—");
+
+        row.add(statCard(
+                "Total Contacts",
+                totalVal, "in directory",
+                ACCENT_BLUE,
+                new Color(219, 234, 254),
+                new Color(239, 246, 255),
+                "people"));
+
+        row.add(statCard(
+                "Last Added",
+                lastVal, "most recent",
+                ACCENT_GREEN,
+                new Color(134, 239, 172),
+                new Color(240, 253, 244),
+                "clock"));
+
+        row.add(statCard(
+                "Database",
+                new JLabel("Active"),
+                "telephone_directory",
+                ACCENT_ORG,
+                new Color(253, 186, 116),
+                new Color(255, 247, 237),
+                "database"));
+
+        return row;
+    }
+
+    private JPanel statCard(String label, JLabel valLbl,
+                            String sub, Color accent,
+                            Color iconBorder, Color iconBg,
+                            String iconType) {
+        JPanel card = new CardPanel(16, BG_CARD);
+        card.setLayout(new BorderLayout(0, 0));
+        card.setBorder(new EmptyBorder(20, 22, 20, 22));
+
+        // Text
+        JPanel col = new JPanel();
+        col.setLayout(new BoxLayout(col, BoxLayout.Y_AXIS));
+        col.setBackground(BG_CARD);
+
+        JLabel lbl = new JLabel(label);
+        lbl.setFont(FONT_STAT_LBL);
+        lbl.setForeground(TEXT_MUTED);
+
+        valLbl.setFont(FONT_STAT_NUM);
+        valLbl.setForeground(TEXT_TITLE);
+
+        JLabel subLbl = new JLabel(sub);
+        subLbl.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        subLbl.setForeground(TEXT_DIM);
+
+        col.add(lbl);
+        col.add(Box.createVerticalStrut(6));
+        col.add(valLbl);
+        col.add(Box.createVerticalStrut(4));
+        col.add(subLbl);
+
+        // Icon box — draws background + icon via Java2D
+        JPanel iconBox = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON);
+                // Background rounded rect
+                g2.setColor(iconBg);
+                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 14, 14));
+                g2.setColor(iconBorder);
+                g2.setStroke(new BasicStroke(1.5f));
+                g2.draw(new RoundRectangle2D.Float(1, 1, getWidth()-2, getHeight()-2, 14, 14));
+                // Draw icon
+                g2.setColor(accent);
+                g2.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                int cx = getWidth() / 2, cy = getHeight() / 2;
+                if ("people".equals(iconType)) {
+                    // Two person silhouettes
+                    // Back person (right)
+                    g2.setColor(new Color(accent.getRed(), accent.getGreen(), accent.getBlue(), 140));
+                    g2.fillOval(cx + 1, cy - 13, 10, 10);
+                    g2.fillRoundRect(cx - 1, cy - 2, 14, 12, 6, 6);
+                    // Front person (left)
+                    g2.setColor(accent);
+                    g2.fillOval(cx - 10, cy - 13, 10, 10);
+                    g2.fillRoundRect(cx - 13, cy - 2, 14, 12, 6, 6);
+                } else if ("clock".equals(iconType)) {
+                    // Clock circle
+                    g2.setColor(iconBg);
+                    g2.fillOval(cx - 11, cy - 11, 22, 22);
+                    g2.setColor(accent);
+                    g2.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                    g2.drawOval(cx - 11, cy - 11, 22, 22);
+                    // Clock hands
+                    g2.drawLine(cx, cy, cx, cy - 7);   // hour hand up
+                    g2.drawLine(cx, cy, cx + 6, cy);   // minute hand right
+                    // Center dot
+                    g2.fillOval(cx - 2, cy - 2, 4, 4);
+                } else if ("database".equals(iconType)) {
+                    // Database cylinder
+                    int dw = 20, dh = 6, dx = cx - dw/2;
+                    // Top ellipse
+                    g2.setColor(iconBg);
+                    g2.fillOval(dx, cy - 12, dw, dh);
+                    g2.setColor(accent);
+                    g2.drawOval(dx, cy - 12, dw, dh);
+                    // Body
+                    g2.setColor(new Color(accent.getRed(), accent.getGreen(), accent.getBlue(), 60));
+                    g2.fillRect(dx, cy - 9, dw, 18);
+                    g2.setColor(accent);
+                    g2.drawLine(dx, cy - 9, dx, cy + 9);
+                    g2.drawLine(dx + dw, cy - 9, dx + dw, cy + 9);
+                    // Middle ellipse
+                    g2.setColor(iconBg);
+                    g2.fillOval(dx, cy - 3, dw, dh);
+                    g2.setColor(accent);
+                    g2.drawOval(dx, cy - 3, dw, dh);
+                    // Bottom ellipse
+                    g2.setColor(iconBg);
+                    g2.fillOval(dx, cy + 6, dw, dh);
+                    g2.setColor(accent);
+                    g2.drawOval(dx, cy + 6, dw, dh);
+                }
+                g2.dispose();
+            }
+        };
+        iconBox.setPreferredSize(new Dimension(52, 52));
+        iconBox.setOpaque(false);
+
+        JPanel iw = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        iw.setBackground(BG_CARD);
+        iw.add(iconBox);
+
+        card.add(col, BorderLayout.CENTER);
+        card.add(iw,  BorderLayout.EAST);
+        return card;
+    }
