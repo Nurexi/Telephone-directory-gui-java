@@ -43,14 +43,14 @@ backend logic layer with an interactive and user-friendly interface.
 
 ## 👥 Team Members
 
-| # | Name | Student ID | GitHub | Role |
+| # | Name | Student ID | GitHub |  |
 |---|---|---|---|---|
-| 1 | Nuredin Seid | 1578/16 | [@Nurexi](https://github.com/Nurexi) | Team Leader + Database |
-| 2 | Eman Ahmed | 0663/16 | [@Eman-Ahm](https://github.com/Eman-Ahm) | Data Model |
-| 3 | Siham Desta | 1774/16 | [@sihutina](https://github.com/sihutina) | Main Window + Input Fields |
-| 4 | Hayat Shekur | 4025/16 | [@hayat121dev](https://github.com/hayat121dev) | Add + Delete Features |
-| 5 | Ammar Abdurahman | 0244/16 | [@Ammudy](https://github.com/Ammudy) | Update + Search Features |
-| 6 | Salsawit Ristu | 1655/16 | [@salsi-hub](https://github.com/salsi-hub) | UI Styling + UX |
+| 1 | Nuredin Seid | 1578/16 | [@Nurexi](https://github.com/Nurexi)
+| 2 | Eman Ahmed | 0663/16 | [@Eman-Ahm](https://github.com/Eman-Ahm) 
+| 3 | Siham Desta | 1774/16 | [@sihutina](https://github.com/sihutina) 
+| 4 | Hayat Shekur | 4025/16 | [@hayat121dev](https://github.com/hayat121dev) 
+| 5 | Ammar Abdurahman | 0244/16 | [@Ammudy](https://github.com/Ammudy) 
+| 6 | Salsawit Ristu | 1655/16 | [@salsi-hub](https://github.com/salsi-hub) 
 
 ---
 
