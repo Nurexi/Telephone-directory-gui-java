@@ -376,3 +376,291 @@ public class MainGUI extends JFrame {
         card.add(iw,  BorderLayout.EAST);
         return card;
     }
+
+    // ─────────────────────────────────────────────────
+    //   Improved by EMAN AHMED
+    // ─────────────────────────────────────────────────
+    private JPanel buildForm() {
+        JPanel card = new CardPanel(16, BG_CARD);
+        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        card.setBorder(new EmptyBorder(22, 24, 22, 24));
+
+        // Title
+        JPanel titleRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        titleRow.setBackground(BG_CARD);
+        titleRow.setAlignmentX(LEFT_ALIGNMENT);
+
+        // Person icon drawn via Java2D
+        JPanel tIcon = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(ACCENT_BLUE);
+                int cx = getWidth() / 2, cy = getHeight() / 2;
+                // Head
+                g2.fillOval(cx - 6, cy - 10, 12, 12);
+                // Body
+                g2.fillRoundRect(cx - 9, cy + 3, 18, 10, 8, 8);
+                g2.dispose();
+            }
+        };
+        tIcon.setPreferredSize(new Dimension(22, 22));
+        tIcon.setOpaque(false);
+
+        JLabel tLbl = new JLabel("Contact Details");
+        tLbl.setFont(FONT_SECTION);
+        tLbl.setForeground(TEXT_TITLE);
+
+        titleRow.add(tIcon);
+        titleRow.add(tLbl);
+        card.add(titleRow);
+        card.add(gap(18));
+
+        // Fields row
+        JPanel fields = new JPanel(
+                new GridLayout(1, 2, 18, 0));
+        fields.setBackground(BG_CARD);
+        fields.setAlignmentX(LEFT_ALIGNMENT);
+        fields.setMaximumSize(
+                new Dimension(Integer.MAX_VALUE, 78));
+
+        fields.add(labeledField(
+                "Full Name", "Enter contact name..."));
+        fields.add(labeledField(
+                "Phone Number", "Enter phone number..."));
+
+        card.add(fields);
+        card.add(gap(18));
+
+        // Buttons row — fills full card width, fixed height
+        JPanel btnsWrap = new JPanel(new BorderLayout());
+        btnsWrap.setBackground(BG_CARD);
+        btnsWrap.setAlignmentX(LEFT_ALIGNMENT);
+        btnsWrap.setPreferredSize(new Dimension(Integer.MAX_VALUE, 48));
+        btnsWrap.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
+        btnsWrap.setMinimumSize(new Dimension(0, 48));
+
+        JPanel btns = new JPanel(new GridLayout(1, 5, 12, 0));
+        btns.setBackground(BG_CARD);
+
+        addBtn    = mkBtn("Add",    ACCENT_BLUE,  true,  "add");
+        searchBtn = mkBtn("Search", ACCENT_BLUE,  false, "search");
+        updateBtn = mkBtn("Update", ACCENT_PURP,  false, "edit");
+        deleteBtn = mkBtn("Delete", ACCENT_RED,   false, "delete");
+        clearBtn  = mkBtn("Clear",  TEXT_MUTED,   false, "clear");
+
+        btns.add(addBtn);
+        btns.add(searchBtn);
+        btns.add(updateBtn);
+        btns.add(deleteBtn);
+        btns.add(clearBtn);
+
+        btnsWrap.add(btns, BorderLayout.CENTER);
+        card.add(btnsWrap);
+
+        JPanel wrap = new JPanel(new BorderLayout());
+        wrap.setBackground(BG_MAIN);
+        wrap.setBorder(new EmptyBorder(0, 28, 0, 28));
+        wrap.add(card, BorderLayout.CENTER);
+        return wrap;
+    }
+
+    private JPanel labeledField(String label,
+                                String ph) {
+        JPanel col = new JPanel();
+        col.setLayout(new BoxLayout(col, BoxLayout.Y_AXIS));
+        col.setBackground(BG_CARD);
+
+        JLabel lbl = new JLabel(label);
+        lbl.setFont(FONT_LABEL);
+        lbl.setForeground(TEXT_PRIMARY);
+        lbl.setAlignmentX(LEFT_ALIGNMENT);
+
+        JTextField field = new JTextField();
+        field.setFont(FONT_INPUT);
+        field.setForeground(TEXT_PRIMARY);
+        field.setBackground(BG_INPUT);
+        field.setCaretColor(ACCENT_BLUE);
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(BORDER_COL, 1),
+                new EmptyBorder(10, 14, 10, 14)
+        ));
+        field.setMaximumSize(
+                new Dimension(Integer.MAX_VALUE, 46));
+        field.setAlignmentX(LEFT_ALIGNMENT);
+
+        // Placeholder
+        field.setText(ph);
+        field.setForeground(TEXT_DIM);
+        field.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (field.getText().equals(ph)) {
+                    field.setText("");
+                    field.setForeground(TEXT_PRIMARY);
+                    field.setBorder(
+                            BorderFactory.createCompoundBorder(
+                                    BorderFactory.createLineBorder(
+                                            ACCENT_BLUE, 2),
+                                    new EmptyBorder(9, 13, 9, 13)
+                            ));
+                }
+            }
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (field.getText().isEmpty()) {
+                    field.setText(ph);
+                    field.setForeground(TEXT_DIM);
+                }
+                field.setBorder(
+                        BorderFactory.createCompoundBorder(
+                                BorderFactory.createLineBorder(
+                                        BORDER_COL, 1),
+                                new EmptyBorder(10, 14, 10, 14)
+                        ));
+            }
+        });
+
+        col.add(lbl);
+        col.add(Box.createVerticalStrut(6));
+        col.add(field);
+
+        if (label.equals("Full Name"))    nameField  = field;
+        if (label.equals("Phone Number")) phoneField = field;
+
+        return col;
+    }
+
+    private JButton mkBtn(String text, Color fg,
+                          boolean filled, String iconType) {
+        final int IS     = 18;   // icon bounding box px
+        final int GAP    = 8;    // icon → text gap
+        final int RADIUS = 24;   // corner arc
+
+        JButton btn = new JButton() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setRenderingHint(RenderingHints.KEY_RENDERING,
+                        RenderingHints.VALUE_RENDER_QUALITY);
+
+                int w = getWidth(), h = getHeight();
+
+                // ── Soft shadow (filled only) ────────────────
+                if (filled && !getModel().isPressed()) {
+                    g2.setColor(new Color(fg.getRed(), fg.getGreen(),
+                            fg.getBlue(), 50));
+                    g2.fill(new RoundRectangle2D.Float(
+                            2, 3, w - 4, h - 1, RADIUS, RADIUS));
+                }
+
+                // ── Background ───────────────────────────────
+                if (filled) {
+                    g2.setColor(getModel().isPressed() ? fg.darker()
+                            : getModel().isRollover() ? fg.brighter() : fg);
+                    g2.fill(new RoundRectangle2D.Float(
+                            0, 0, w, h - 2, RADIUS, RADIUS));
+                } else {
+                    g2.setColor(getModel().isRollover()
+                            ? new Color(fg.getRed(), fg.getGreen(), fg.getBlue(), 15)
+                            : BG_CARD);
+                    g2.fill(new RoundRectangle2D.Float(0, 0, w, h, RADIUS, RADIUS));
+                    g2.setColor(getModel().isRollover() ? fg : BORDER_COL);
+                    g2.setStroke(new BasicStroke(
+                            getModel().isRollover() ? 1.8f : 1.4f));
+                    g2.draw(new RoundRectangle2D.Float(
+                            0.7f, 0.7f, w - 1.4f, h - 1.4f, RADIUS, RADIUS));
+                }
+
+                // ── Measure block to centre icon + text ──────
+                FontMetrics fm = g2.getFontMetrics(getFont());
+                int textW  = fm.stringWidth(text);
+                int blockW = IS + GAP + textW;
+                int startX = (w - blockW) / 2;
+                int midY   = filled ? (h - 2) / 2 : h / 2;
+                int ix     = startX;
+                int iy     = midY - IS / 2;
+
+                // ── Icon ─────────────────────────────────────
+                Color ic = filled ? Color.WHITE : fg;
+                g2.setColor(ic);
+                BasicStroke thick = new BasicStroke(2.0f,
+                        BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                BasicStroke thin  = new BasicStroke(1.5f,
+                        BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                g2.setStroke(thick);
+
+                switch (iconType) {
+                    case "add": {
+                        int m = IS / 2;
+                        g2.drawLine(ix + m, iy + 3,       ix + m, iy + IS - 3);
+                        g2.drawLine(ix + 3, iy + m,       ix + IS - 3, iy + m);
+                        break;
+                    }
+                    case "search": {
+                        int r = 6;
+                        g2.drawOval(ix, iy + 1, r * 2, r * 2);
+                        g2.drawLine(ix + r * 2 - 1, iy + r * 2,
+                                    ix + IS - 1,    iy + IS);
+                        break;
+                    }
+                    case "edit": {
+                        int[] bx = { ix+IS-5, ix+IS-1, ix+5, ix+1 };
+                        int[] by = { iy+1,    iy+5,    iy+IS-1, iy+IS-5 };
+                        g2.drawPolygon(bx, by, 4);
+                        g2.drawLine(ix+1, iy+IS-5, ix+3, iy+IS);
+                        g2.drawLine(ix+3, iy+IS,   ix+5, iy+IS-1);
+                        g2.setStroke(thin);
+                        g2.drawLine(ix+IS-5, iy+1, ix+IS-1, iy+5);
+                        break;
+                    }
+                    case "delete": {
+                        g2.setStroke(thin);
+                        g2.drawRoundRect(ix+6, iy, IS-12, 4, 2, 2);
+                        g2.setStroke(thick);
+                        g2.drawLine(ix+1, iy+5, ix+IS-1, iy+5);
+                        g2.drawRoundRect(ix+2, iy+7, IS-4, IS-8, 3, 3);
+                        g2.setStroke(thin);
+                        g2.drawLine(ix+6,    iy+10, ix+6,    iy+IS-3);
+                        g2.drawLine(ix+IS/2, iy+10, ix+IS/2, iy+IS-3);
+                        g2.drawLine(ix+IS-6, iy+10, ix+IS-6, iy+IS-3);
+                        break;
+                    }
+                    case "clear": {
+                        g2.drawArc(ix+1, iy+1, IS-2, IS-2, 90, -270);
+                        int ax = ix + IS/2 + 1, ay = iy + IS - 1;
+                        g2.drawLine(ax, ay, ax+4, ay-4);
+                        g2.drawLine(ax, ay, ax-4, ay-4);
+                        break;
+                    }
+                }
+
+                // ── Label ────────────────────────────────────
+                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                        RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                g2.setFont(getFont());
+                g2.setColor(filled ? Color.WHITE : fg);
+                int tx = startX + IS + GAP;
+                int ty = midY + (fm.getAscent() - fm.getDescent()) / 2;
+                g2.drawString(text, tx, ty);
+
+                g2.dispose();
+            }
+        };
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        btn.setForeground(filled ? Color.WHITE : fg);
+        btn.setBackground(BG_CARD);
+        btn.setOpaque(false);
+        btn.setContentAreaFilled(false);
+        btn.setFocusPainted(false);
+        btn.setBorderPainted(false);
+        btn.setBorder(new EmptyBorder(0, 0, 0, 0));
+        btn.setPreferredSize(new Dimension(120, 48));
+        btn.setMinimumSize(new Dimension(80, 48));
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        return btn;
+    }
