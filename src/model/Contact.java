@@ -21,4 +21,10 @@ public class Contact {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+    // Developed by Eman Ahmed
+    // Returns formatted contact information
+@Override
+public String toString() {
+    return "Name: " + name + ", Phone: " + phoneNumber;
+}
 }
