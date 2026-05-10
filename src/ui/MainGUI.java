@@ -158,39 +158,6 @@ public class MainGUI extends JFrame {
                 new FlowLayout(FlowLayout.LEFT, 16, 0));
         left.setBackground(BG_CARD);
 
-        // Row 2 — buttons
-        JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 6));
-        buttonRow.setBorder(BorderFactory.createTitledBorder("Actions"));
-
-        addBtn    = new JButton("Add Contact");
-        deleteBtn = new JButton("Delete Contact");
-        updateBtn = new JButton("Update Contact");
-        searchBtn = new JButton("Search");
-        clearBtn  = new JButton("Clear Fields");
-
-        styleButton(addBtn,    new Color(39, 174, 96),   Color.WHITE);
-        styleButton(deleteBtn, new Color(231, 76, 60),   Color.WHITE);
-        styleButton(updateBtn, new Color(230, 126, 34),  Color.WHITE);
-        styleButton(searchBtn, new Color(52, 152, 219),  Color.WHITE);
-        styleButton(clearBtn,  new Color(127, 140, 141), Color.WHITE);
-
-        buttonRow.add(addBtn);
-        buttonRow.add(deleteBtn);
-        buttonRow.add(updateBtn);
-        buttonRow.add(searchBtn);
-        buttonRow.add(clearBtn);
-    addBtn.setToolTipText("Add a new contact");
-    deleteBtn.setToolTipText("Delete selected contact");
-    updateBtn.setToolTipText("Update contact phone number");
-    searchBtn.setToolTipText("Search contact by name");
-    clearBtn.setToolTipText("Clear all input fields");
-
-        topPanel.add(inputRow);
-        topPanel.add(buttonRow);
-
-        // ── CENTER: table ─────────────────────────────
-        String[] columns = {"Name", "Phone Number"};
-        tableModel = new DefaultTableModel(columns, 0) {
         // Logo
         JPanel logo = new JPanel() {
             @Override
@@ -262,9 +229,8 @@ public class MainGUI extends JFrame {
         hdr.add(right, BorderLayout.EAST);
         return hdr;
     }
-}
-    
- // ─────────────────────────────────────────────────
+
+    // ─────────────────────────────────────────────────
     //  Improved by HAYAT SHEKUR
     // ─────────────────────────────────────────────────
     private JPanel buildStats() {
@@ -768,205 +734,11 @@ public class MainGUI extends JFrame {
             }
         };
 
-        contactTable = new JTable(tableModel);
-        contactTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        contactTable.setRowHeight(26);
-        contactTable.setFont(new Font("SansSerif", Font.PLAIN, 13));
-        contactTable.setGridColor(new Color(220, 220, 220));
-        contactTable.setShowGrid(true);
-        contactTable.setSelectionBackground(new Color(41, 128, 185));
-        contactTable.setSelectionForeground(Color.WHITE);
-        contactTable.getTableHeader().setFont(
-                new Font("SansSerif", Font.BOLD, 13));
-        contactTable.getTableHeader().setBackground(
-                new Color(52, 152, 219));
-        contactTable.getTableHeader().setForeground(Color.WHITE);
-        contactTable.getTableHeader().setReorderingAllowed(false);
-
-        contactTable.setDefaultRenderer(Object.class,
-                new javax.swing.table.DefaultTableCellRenderer() {
-                    @Override
-                    public Component getTableCellRendererComponent(
-                            JTable table, Object value, boolean isSelected,
-                            boolean hasFocus, int row, int col) {
-                        Component c = super.getTableCellRendererComponent(
-                                table, value, isSelected, hasFocus, row, col);
-                        if (!isSelected) {
-                            c.setBackground(row % 2 == 0
-                                    ? Color.WHITE
-                                    : new Color(235, 245, 255));
-                        }
-                        return c;
-                    }
-                });
-
-        JScrollPane scrollPane = new JScrollPane(contactTable);
-        scrollPane.setBorder(BorderFactory.createTitledBorder("Contacts"));
-
-        // ── SOUTH: status bar ─────────────────────────
-        JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 4));
-        statusPanel.setBackground(new Color(236, 240, 241));
-        statusPanel.setBorder(BorderFactory.createMatteBorder(
-                1, 0, 0, 0, new Color(189, 195, 199)));
-
-        statusLabel = new JLabel("Ready");
-        statusLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
-        statusLabel.setForeground(new Color(80, 80, 80));
-        statusPanel.add(statusLabel);
-
-        add(topPanel,    BorderLayout.NORTH);
-        add(scrollPane,  BorderLayout.CENTER);
-        add(statusPanel, BorderLayout.SOUTH);
-    }
-
-    private void attachListeners() {
-        addBtn.addActionListener(e -> handleAdd());
-        deleteBtn.addActionListener(e -> handleDelete());
-        updateBtn.addActionListener(e -> handleUpdate());
-        searchBtn.addActionListener(e -> handleSearch());
-        clearBtn.addActionListener(e -> {
-            clearFields();
-            setStatus("Fields cleared");
-        });
-
-        // Click table row → fill input fields automatically
-        contactTable.getSelectionModel()
-                .addListSelectionListener(e -> {
-                    if (!e.getValueIsAdjusting()) {
-                        int row = contactTable.getSelectedRow();
-                        if (row >= 0) {
-                            nameField.setText(
-                                    (String) tableModel.getValueAt(row, 0));
-                            phoneField.setText(
-                                    (String) tableModel.getValueAt(row, 1));
-                        }
-                    }
-                });
-    }
-
-    // ── Add Handler ───────────────────────────────────
-    private void handleAdd() {
-        String name  = nameField.getText().trim();
-        String phone = phoneField.getText().trim();
-
-        if (name.isEmpty() || phone.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Please fill in all required fields.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        boolean added = manager.addContact(name, phone);
-
-        if (added) {
-            JOptionPane.showMessageDialog(this,
-                    "Contact added successfully.",
-                    "Success", JOptionPane.INFORMATION_MESSAGE);
-            refreshTable();
-            clearFields();
-            setStatus("Added: " + name);
-        } else {
-            JOptionPane.showMessageDialog(this,
-                    "This name is already used. Please enter a unique name.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    // ── Delete Handler ────────────────────────────────
-    private void handleDelete() {
-        String name = nameField.getText().trim();
-
-        if (name.isEmpty()) {
-            int row = contactTable.getSelectedRow();
-            if (row >= 0) {
-                name = (String) tableModel.getValueAt(row, 0);
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "Please fill in all required fields.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
-
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "Are you sure you want to delete \"" + name + "\"?",
-                "Confirm Delete",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE);
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            boolean deleted = manager.deleteContact(name);
-
-            if (deleted) {
-                JOptionPane.showMessageDialog(this,
-                        "Contact deleted successfully.",
-                        "Success", JOptionPane.INFORMATION_MESSAGE);
-                refreshTable();
-                clearFields();
-                setStatus("Deleted: " + name);
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "Contact not found.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
-
-    // ── Update Handler ────────────────────────────────
-    private void handleUpdate() {
-        String name     = nameField.getText().trim();
-        String newPhone = phoneField.getText().trim();
-
-        if (name.isEmpty() || newPhone.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Please fill in all required fields.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        boolean updated = manager.updateContact(name, newPhone);
-
-        if (updated) {
-            JOptionPane.showMessageDialog(this,
-                    "Contact updated successfully.",
-                    "Success", JOptionPane.INFORMATION_MESSAGE);
-            refreshTable();
-            clearFields();
-            setStatus("Updated: " + name);
-        } else {
-            JOptionPane.showMessageDialog(this,
-                    "Contact not found.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    // ── Search Handler ────────────────────────────────
-    private void handleSearch() {
-        String name = nameField.getText().trim();
-
-        if (name.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Please fill in all required fields.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        Contact found = manager.searchContact(name);
-
-        if (found != null) {
-            for (int i = 0; i < tableModel.getRowCount(); i++) {
-                if (tableModel.getValueAt(i, 0).toString()
-                        .equalsIgnoreCase(name)) {
-                    contactTable.setRowSelectionInterval(i, i);
-                    contactTable.scrollRectToVisible(
-                            contactTable.getCellRect(i, 0, true));
-                    break;
         contactTable = new JTable(tableModel) {
             @Override
             public Component prepareRenderer(
                     TableCellRenderer r, int row, int col) {
-                Component c = super.prepareRenderer(
-                        r, row, col);
+                Component c = super.prepareRenderer(r, row, col);
                 if (!isRowSelected(row)) {
                     c.setBackground(row % 2 == 0
                             ? BG_TABLE_ROW : BG_TABLE_ALT);
@@ -984,23 +756,16 @@ public class MainGUI extends JFrame {
         contactTable.setSelectionForeground(TEXT_PRIMARY);
         contactTable.setRowHeight(56);
         contactTable.setShowGrid(false);
-        contactTable.setIntercellSpacing(
-                new Dimension(0, 2));
-        contactTable.setSelectionMode(
-                ListSelectionModel.SINGLE_SELECTION);
+        contactTable.setIntercellSpacing(new Dimension(0, 2));
+        contactTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         contactTable.setFillsViewportHeight(true);
 
         // Column widths
-        contactTable.getColumnModel()
-                .getColumn(0).setPreferredWidth(55);
-        contactTable.getColumnModel()
-                .getColumn(0).setMaxWidth(65);
-        contactTable.getColumnModel()
-                .getColumn(1).setPreferredWidth(300);
-        contactTable.getColumnModel()
-                .getColumn(2).setPreferredWidth(230);
-        contactTable.getColumnModel()
-                .getColumn(3).setPreferredWidth(120);
+        contactTable.getColumnModel().getColumn(0).setPreferredWidth(55);
+        contactTable.getColumnModel().getColumn(0).setMaxWidth(65);
+        contactTable.getColumnModel().getColumn(1).setPreferredWidth(300);
+        contactTable.getColumnModel().getColumn(2).setPreferredWidth(230);
+        contactTable.getColumnModel().getColumn(3).setPreferredWidth(120);
 
         // Header
         JTableHeader th = contactTable.getTableHeader();
@@ -1008,31 +773,18 @@ public class MainGUI extends JFrame {
         th.setForeground(TEXT_MUTED);
         th.setFont(FONT_TH);
         th.setReorderingAllowed(false);
-        th.setBorder(BorderFactory.createMatteBorder(
-                0, 0, 2, 0, BORDER_COL));
+        th.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, BORDER_COL));
         th.setPreferredSize(new Dimension(0, 40));
 
         // Custom renderers
-        contactTable.getColumnModel()
-                .getColumn(0).setCellRenderer(
-                        new IdxRenderer());
-        contactTable.getColumnModel()
-                .getColumn(1).setCellRenderer(
-                        new AvatarRenderer());
-        contactTable.getColumnModel()
-                .getColumn(2).setCellRenderer(
-                        new PhoneRenderer());
-        contactTable.getColumnModel()
-                .getColumn(3).setCellRenderer(
-                        new BadgeRenderer());
+        contactTable.getColumnModel().getColumn(0).setCellRenderer(new IdxRenderer());
+        contactTable.getColumnModel().getColumn(1).setCellRenderer(new AvatarRenderer());
+        contactTable.getColumnModel().getColumn(2).setCellRenderer(new PhoneRenderer());
+        contactTable.getColumnModel().getColumn(3).setCellRenderer(new BadgeRenderer());
 
-        JScrollPane scroll =
-                new JScrollPane(contactTable);
-        scroll.setBorder(
-                BorderFactory.createLineBorder(
-                        BORDER_COL, 1));
-        scroll.getViewport()
-                .setBackground(BG_TABLE_ROW);
+        JScrollPane scroll = new JScrollPane(contactTable);
+        scroll.setBorder(BorderFactory.createLineBorder(BORDER_COL, 1));
+        scroll.getViewport().setBackground(BG_TABLE_ROW);
 
         card.add(hdr,    BorderLayout.NORTH);
         card.add(scroll, BorderLayout.CENTER);
