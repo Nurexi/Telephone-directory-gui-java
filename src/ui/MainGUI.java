@@ -1320,4 +1320,202 @@ public class MainGUI extends JFrame {
         return p;
     }
 
-    
+     // ─────────────────────────────────────────────────
+    //  INNER — CardPanel (shadow + rounded)
+    // ─────────────────────────────────────────────────
+    static class CardPanel extends JPanel {
+        private final int r;
+        private final Color bg;
+        CardPanel(int r, Color bg) {
+            this.r = r; this.bg = bg;
+            setOpaque(false);
+        }
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(
+                    RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON);
+            // Soft shadow
+            for (int i = 5; i >= 1; i--) {
+                g2.setColor(new Color(0, 0, 0,
+                        5 * (6 - i)));
+                g2.fill(new RoundRectangle2D.Float(
+                        i, i,
+                        getWidth()  - i * 2,
+                        getHeight() - i * 2,
+                        r * 2, r * 2));
+            }
+            g2.setColor(bg);
+            g2.fill(new RoundRectangle2D.Float(
+                    0, 0, getWidth(), getHeight(),
+                    r * 2, r * 2));
+            g2.setColor(new Color(218, 225, 234));
+            g2.setStroke(new BasicStroke(0.8f));
+            g2.draw(new RoundRectangle2D.Float(
+                    0.5f, 0.5f,
+                    getWidth()  - 1,
+                    getHeight() - 1,
+                    r * 2, r * 2));
+            g2.dispose();
+            super.paintComponent(g);
+        }
+    }
+
+    // ─────────────────────────────────────────────────
+    //  INNER — Table Renderers
+    // ─────────────────────────────────────────────────
+
+    // Row index
+    static class IdxRenderer
+            extends DefaultTableCellRenderer {
+        IdxRenderer() {
+            setHorizontalAlignment(CENTER);
+        }
+        @Override
+        public Component getTableCellRendererComponent(
+                JTable t, Object v, boolean sel,
+                boolean foc, int row, int col) {
+            super.getTableCellRendererComponent(
+                    t, v, sel, foc, row, col);
+            setForeground(TEXT_DIM);
+            setFont(new Font("Segoe UI",
+                    Font.PLAIN, 12));
+            setBorder(new EmptyBorder(0, 8, 0, 8));
+            return this;
+        }
+    }
+
+    // Phone
+    static class PhoneRenderer
+            extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(
+                JTable t, Object v, boolean sel,
+                boolean foc, int row, int col) {
+            super.getTableCellRendererComponent(
+                    t, v, sel, foc, row, col);
+            setForeground(TEXT_MUTED);
+            setFont(new Font("Segoe UI",
+                    Font.PLAIN, 13));
+            setBorder(new EmptyBorder(0, 12, 0, 12));
+            return this;
+        }
+    }
+
+    // Status badge
+    static class BadgeRenderer
+            extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(
+                JTable t, Object v, boolean sel,
+                boolean foc, int row, int col) {
+            JPanel p = new JPanel(
+                    new FlowLayout(FlowLayout.CENTER, 0, 0));
+            p.setBackground(sel ? BG_TABLE_SEL :
+                    (row % 2 == 0
+                            ? BG_TABLE_ROW : BG_TABLE_ALT));
+            JLabel b = new JLabel("\u25CF  Active") {
+                @Override
+                protected void paintComponent(
+                        Graphics g) {
+                    Graphics2D g2 =
+                            (Graphics2D) g.create();
+                    g2.setRenderingHint(
+                            RenderingHints.KEY_ANTIALIASING,
+                            RenderingHints
+                                    .VALUE_ANTIALIAS_ON);
+                    g2.setColor(
+                            new Color(220, 252, 231));
+                    g2.fill(new RoundRectangle2D.Float(
+                            0, 0, getWidth(), getHeight(),
+                            getHeight(), getHeight()));
+                    g2.setColor(
+                            new Color(134, 239, 172));
+                    g2.setStroke(new BasicStroke(1f));
+                    g2.draw(new RoundRectangle2D.Float(
+                            0.5f, 0.5f,
+                            getWidth()-1, getHeight()-1,
+                            getHeight(), getHeight()));
+                    g2.dispose();
+                    super.paintComponent(g);
+                }
+            };
+            b.setFont(new Font("Segoe UI",
+                    Font.BOLD, 11));
+            b.setForeground(new Color(21, 128, 61));
+            b.setOpaque(false);
+            b.setBorder(new EmptyBorder(4, 12, 4, 12));
+            p.add(b);
+            return p;
+        }
+    }
+
+    // Avatar + name
+    static class AvatarRenderer
+            extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(
+                JTable t, Object v, boolean sel,
+                boolean foc, int row, int col) {
+            String name = v == null ? "" : v.toString();
+            Color rowBg = sel ? BG_TABLE_SEL :
+                    (row % 2 == 0
+                            ? BG_TABLE_ROW : BG_TABLE_ALT);
+
+            JPanel p = new JPanel(
+                    new FlowLayout(FlowLayout.LEFT, 14, 0));
+            p.setBackground(rowBg);
+
+            Color ac = AV_COLORS[
+                    Math.abs(name.hashCode())
+                            % AV_COLORS.length];
+            String ini = initials(name);
+
+            JLabel av = new JLabel(ini) {
+                @Override
+                protected void paintComponent(
+                        Graphics g) {
+                    Graphics2D g2 =
+                            (Graphics2D) g.create();
+                    g2.setRenderingHint(
+                            RenderingHints.KEY_ANTIALIASING,
+                            RenderingHints
+                                    .VALUE_ANTIALIAS_ON);
+                    g2.setColor(ac);
+                    g2.fillOval(0, 0,
+                            getWidth(), getHeight());
+                    g2.dispose();
+                    super.paintComponent(g);
+                }
+            };
+            av.setHorizontalAlignment(CENTER);
+            av.setFont(new Font("Segoe UI",
+                    Font.BOLD, 13));
+            av.setForeground(Color.WHITE);
+            av.setOpaque(false);
+            av.setPreferredSize(new Dimension(38, 38));
+
+            JLabel nl = new JLabel(name);
+            nl.setFont(new Font("Segoe UI",
+                    Font.BOLD, 13));
+            nl.setForeground(TEXT_PRIMARY);
+
+            p.add(av);
+            p.add(nl);
+            return p;
+        }
+
+        private String initials(String n) {
+            if (n == null || n.isEmpty()) return "?";
+            String[] p = n.trim().split("\\s+");
+            if (p.length == 1) {
+                return p[0].length() >= 2
+                        ? p[0].substring(0, 2).toUpperCase()
+                        : p[0].toUpperCase();
+            }
+            return ("" + p[0].charAt(0)
+                    + p[1].charAt(0)).toUpperCase();
+        }
+    }
+}
