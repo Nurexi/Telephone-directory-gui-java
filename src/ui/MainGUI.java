@@ -768,6 +768,199 @@ public class MainGUI extends JFrame {
             }
         };
 
+        contactTable = new JTable(tableModel);
+        contactTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        contactTable.setRowHeight(26);
+        contactTable.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        contactTable.setGridColor(new Color(220, 220, 220));
+        contactTable.setShowGrid(true);
+        contactTable.setSelectionBackground(new Color(41, 128, 185));
+        contactTable.setSelectionForeground(Color.WHITE);
+        contactTable.getTableHeader().setFont(
+                new Font("SansSerif", Font.BOLD, 13));
+        contactTable.getTableHeader().setBackground(
+                new Color(52, 152, 219));
+        contactTable.getTableHeader().setForeground(Color.WHITE);
+        contactTable.getTableHeader().setReorderingAllowed(false);
+
+        contactTable.setDefaultRenderer(Object.class,
+                new javax.swing.table.DefaultTableCellRenderer() {
+                    @Override
+                    public Component getTableCellRendererComponent(
+                            JTable table, Object value, boolean isSelected,
+                            boolean hasFocus, int row, int col) {
+                        Component c = super.getTableCellRendererComponent(
+                                table, value, isSelected, hasFocus, row, col);
+                        if (!isSelected) {
+                            c.setBackground(row % 2 == 0
+                                    ? Color.WHITE
+                                    : new Color(235, 245, 255));
+                        }
+                        return c;
+                    }
+                });
+
+        JScrollPane scrollPane = new JScrollPane(contactTable);
+        scrollPane.setBorder(BorderFactory.createTitledBorder("Contacts"));
+
+        // ── SOUTH: status bar ─────────────────────────
+        JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 4));
+        statusPanel.setBackground(new Color(236, 240, 241));
+        statusPanel.setBorder(BorderFactory.createMatteBorder(
+                1, 0, 0, 0, new Color(189, 195, 199)));
+
+        statusLabel = new JLabel("Ready");
+        statusLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        statusLabel.setForeground(new Color(80, 80, 80));
+        statusPanel.add(statusLabel);
+
+        add(topPanel,    BorderLayout.NORTH);
+        add(scrollPane,  BorderLayout.CENTER);
+        add(statusPanel, BorderLayout.SOUTH);
+    }
+
+    private void attachListeners() {
+        addBtn.addActionListener(e -> handleAdd());
+        deleteBtn.addActionListener(e -> handleDelete());
+        updateBtn.addActionListener(e -> handleUpdate());
+        searchBtn.addActionListener(e -> handleSearch());
+        clearBtn.addActionListener(e -> {
+            clearFields();
+            setStatus("Fields cleared");
+        });
+
+        // Click table row → fill input fields automatically
+        contactTable.getSelectionModel()
+                .addListSelectionListener(e -> {
+                    if (!e.getValueIsAdjusting()) {
+                        int row = contactTable.getSelectedRow();
+                        if (row >= 0) {
+                            nameField.setText(
+                                    (String) tableModel.getValueAt(row, 0));
+                            phoneField.setText(
+                                    (String) tableModel.getValueAt(row, 1));
+                        }
+                    }
+                });
+    }
+
+    // ── Add Handler ───────────────────────────────────
+    private void handleAdd() {
+        String name  = nameField.getText().trim();
+        String phone = phoneField.getText().trim();
+
+        if (name.isEmpty() || phone.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Please fill in all required fields.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        boolean added = manager.addContact(name, phone);
+
+        if (added) {
+            JOptionPane.showMessageDialog(this,
+                    "Contact added successfully.",
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+            refreshTable();
+            clearFields();
+            setStatus("Added: " + name);
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "This name is already used. Please enter a unique name.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // ── Delete Handler ────────────────────────────────
+    private void handleDelete() {
+        String name = nameField.getText().trim();
+
+        if (name.isEmpty()) {
+            int row = contactTable.getSelectedRow();
+            if (row >= 0) {
+                name = (String) tableModel.getValueAt(row, 0);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Please fill in all required fields.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to delete \"" + name + "\"?",
+                "Confirm Delete",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            boolean deleted = manager.deleteContact(name);
+
+            if (deleted) {
+                JOptionPane.showMessageDialog(this,
+                        "Contact deleted successfully.",
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
+                refreshTable();
+                clearFields();
+                setStatus("Deleted: " + name);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Contact not found.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    // ── Update Handler ────────────────────────────────
+    private void handleUpdate() {
+        String name     = nameField.getText().trim();
+        String newPhone = phoneField.getText().trim();
+
+        if (name.isEmpty() || newPhone.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Please fill in all required fields.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        boolean updated = manager.updateContact(name, newPhone);
+
+        if (updated) {
+            JOptionPane.showMessageDialog(this,
+                    "Contact updated successfully.",
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+            refreshTable();
+            clearFields();
+            setStatus("Updated: " + name);
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "Contact not found.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // ── Search Handler ────────────────────────────────
+    private void handleSearch() {
+        String name = nameField.getText().trim();
+
+        if (name.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Please fill in all required fields.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Contact found = manager.searchContact(name);
+
+        if (found != null) {
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+                if (tableModel.getValueAt(i, 0).toString()
+                        .equalsIgnoreCase(name)) {
+                    contactTable.setRowSelectionInterval(i, i);
+                    contactTable.scrollRectToVisible(
+                            contactTable.getCellRect(i, 0, true));
+                    break;
         contactTable = new JTable(tableModel) {
             @Override
             public Component prepareRenderer(
@@ -901,3 +1094,230 @@ public class MainGUI extends JFrame {
         bar.add(dbPanel,   BorderLayout.EAST);
         return bar;
     }
+
+    // ─────────────────────────────────────────────────
+    //  LISTENERS
+    // ─────────────────────────────────────────────────
+    private void attachListeners() {
+        addBtn.addActionListener(e    -> handleAdd());
+        deleteBtn.addActionListener(e -> handleDelete());
+        updateBtn.addActionListener(e -> handleUpdate());
+        searchBtn.addActionListener(e -> handleSearch());
+        clearBtn.addActionListener(e  -> {
+            clearFields();
+            setStatus("\u25CF  Fields cleared",
+                    TEXT_MUTED);
+        });
+
+        contactTable.getSelectionModel()
+                .addListSelectionListener(e -> {
+                    if (!e.getValueIsAdjusting()) {
+                        int row = contactTable
+                                .getSelectedRow();
+                        if (row >= 0) {
+                            putField(nameField,
+                                    "Enter contact name...",
+                                    (String) tableModel
+                                            .getValueAt(row, 1));
+                            putField(phoneField,
+                                    "Enter phone number...",
+                                    (String) tableModel
+                                            .getValueAt(row, 2));
+                        }
+                    }
+                });
+    }
+
+    // ─────────────────────────────────────────────────
+    //  HANDLERS
+    // ─────────────────────────────────────────────────
+    private void handleAdd() {
+        String name  = getVal(nameField,
+                "Enter contact name...");
+        String phone = getVal(phoneField,
+                "Enter phone number...");
+
+        if (name.isEmpty() || phone.isEmpty()) {
+            err("Please fill in all required fields.");
+            return;
+        }
+        if (manager.addContact(name, phone)) {
+            ok("Contact added successfully.");
+            lastVal.setText(name);
+            refreshTable();
+            clearFields();
+            setStatus("\u25CF  Added: " + name,
+                    ACCENT_GREEN);
+        } else {
+            err("This name is already used. " +
+                    "Please enter a unique name.");
+        }
+    }
+
+    private void handleDelete() {
+        String name = getVal(nameField,
+                "Enter contact name...");
+        if (name.isEmpty()) {
+            int row = contactTable.getSelectedRow();
+            if (row >= 0) {
+                name = (String) tableModel
+                        .getValueAt(row, 1);
+            } else {
+                err("Please select or enter a name.");
+                return;
+            }
+        }
+        int c = JOptionPane.showConfirmDialog(this,
+                "Delete \"" + name + "\"?",
+                "Confirm Delete",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+        if (c == JOptionPane.YES_OPTION) {
+            if (manager.deleteContact(name)) {
+                ok("Contact deleted successfully.");
+                refreshTable();
+                clearFields();
+                setStatus("\u25CF  Deleted: " + name,
+                        ACCENT_RED);
+            } else {
+                err("Contact not found.");
+            }
+        }
+    }
+
+    private void handleUpdate() {
+        String name  = getVal(nameField,
+                "Enter contact name...");
+        String phone = getVal(phoneField,
+                "Enter phone number...");
+        if (name.isEmpty() || phone.isEmpty()) {
+            err("Please fill in all required fields.");
+            return;
+        }
+        if (manager.updateContact(name, phone)) {
+            ok("Contact updated successfully.");
+            refreshTable();
+            clearFields();
+            setStatus("\u25CF  Updated: " + name,
+                    ACCENT_PURP);
+        } else {
+            err("Contact not found.");
+        }
+    }
+
+    private void handleSearch() {
+        String name = getVal(nameField,
+                "Enter contact name...");
+        if (name.isEmpty()) {
+            err("Please enter a name to search.");
+            return;
+        }
+        Contact found = manager.searchContact(name);
+        if (found != null) {
+            for (int i = 0;
+                 i < tableModel.getRowCount(); i++) {
+                if (tableModel.getValueAt(i, 1)
+                        .toString()
+                        .equalsIgnoreCase(name)) {
+                    contactTable
+                            .setRowSelectionInterval(i, i);
+                    contactTable.scrollRectToVisible(
+                            contactTable
+                                    .getCellRect(i, 0, true));
+                    break;
+                }
+            }
+            putField(phoneField,
+                    "Enter phone number...",
+                    found.getPhoneNumber());
+            ok("Contact Found!\n\n"
+                    + "Name:   " + found.getName()
+                    + "\nPhone:  "
+                    + found.getPhoneNumber());
+            setStatus("\u25CF  Found: "
+                    + found.getName(), ACCENT_BLUE);
+        } else {
+            err("Contact not found.");
+        }
+    }
+
+    // ─────────────────────────────────────────────────
+    //  HELPERS
+    // ─────────────────────────────────────────────────
+    private void refreshTable() {
+        tableModel.setRowCount(0);
+        List<Contact> all = manager.getAllContacts();
+        int i = 1;
+        for (Contact c : all) {
+            tableModel.addRow(new Object[]{
+                    String.format("%02d", i++),
+                    c.getName(),
+                    c.getPhoneNumber(),
+                    "Active"
+            });
+        }
+        int n = all.size();
+        totalVal.setText(String.valueOf(n));
+        cntBadge.setText(n + " contacts");
+        if (!all.isEmpty()) {
+            lastVal.setText(
+                    all.get(all.size()-1).getName());
+        } else {
+            lastVal.setText("—");
+        }
+        setStatus(
+                "\u25CF  Ready — all systems operational",
+                ACCENT_GREEN);
+    }
+
+    private void clearFields() {
+        putField(nameField,
+                "Enter contact name...", "");
+        putField(phoneField,
+                "Enter phone number...", "");
+        nameField.requestFocus();
+        contactTable.clearSelection();
+    }
+
+    private void putField(JTextField f,
+                          String ph, String val) {
+        if (val == null || val.isEmpty()) {
+            f.setText(ph);
+            f.setForeground(TEXT_DIM);
+        } else {
+            f.setText(val);
+            f.setForeground(TEXT_PRIMARY);
+        }
+    }
+
+    private String getVal(JTextField f, String ph) {
+        String t = f.getText().trim();
+        return t.equals(ph) ? "" : t;
+    }
+
+    private void setStatus(String msg, Color col) {
+        statusLbl.setText(msg);
+        statusLbl.setForeground(col);
+    }
+
+    private void err(String msg) {
+        JOptionPane.showMessageDialog(this, msg,
+                "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void ok(String msg) {
+        JOptionPane.showMessageDialog(this, msg,
+                "Success", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private Component gap(int h) {
+        JPanel p = new JPanel();
+        p.setOpaque(false);
+        p.setPreferredSize(new Dimension(0, h));
+        p.setMaximumSize(
+                new Dimension(Integer.MAX_VALUE, h));
+        p.setMinimumSize(new Dimension(0, h));
+        return p;
+    }
+
+    
