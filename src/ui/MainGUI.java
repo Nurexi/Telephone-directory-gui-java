@@ -139,6 +139,7 @@ public class MainGUI extends JFrame {
         add(buildStatusBar(), BorderLayout.SOUTH);
     }
 
+
     // ─────────────────────────────────────────────────
     //  HEADER
     // ─────────────────────────────────────────────────
@@ -151,11 +152,45 @@ public class MainGUI extends JFrame {
                 new EmptyBorder(18, 28, 18, 28)
         ));
 
+
         // Left — logo + text
         JPanel left = new JPanel(
                 new FlowLayout(FlowLayout.LEFT, 16, 0));
         left.setBackground(BG_CARD);
 
+        // Row 2 — buttons
+        JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 6));
+        buttonRow.setBorder(BorderFactory.createTitledBorder("Actions"));
+
+        addBtn    = new JButton("Add Contact");
+        deleteBtn = new JButton("Delete Contact");
+        updateBtn = new JButton("Update Contact");
+        searchBtn = new JButton("Search");
+        clearBtn  = new JButton("Clear Fields");
+
+        styleButton(addBtn,    new Color(39, 174, 96),   Color.WHITE);
+        styleButton(deleteBtn, new Color(231, 76, 60),   Color.WHITE);
+        styleButton(updateBtn, new Color(230, 126, 34),  Color.WHITE);
+        styleButton(searchBtn, new Color(52, 152, 219),  Color.WHITE);
+        styleButton(clearBtn,  new Color(127, 140, 141), Color.WHITE);
+
+        buttonRow.add(addBtn);
+        buttonRow.add(deleteBtn);
+        buttonRow.add(updateBtn);
+        buttonRow.add(searchBtn);
+        buttonRow.add(clearBtn);
+    addBtn.setToolTipText("Add a new contact");
+    deleteBtn.setToolTipText("Delete selected contact");
+    updateBtn.setToolTipText("Update contact phone number");
+    searchBtn.setToolTipText("Search contact by name");
+    clearBtn.setToolTipText("Clear all input fields");
+
+        topPanel.add(inputRow);
+        topPanel.add(buttonRow);
+
+        // ── CENTER: table ─────────────────────────────
+        String[] columns = {"Name", "Phone Number"};
+        tableModel = new DefaultTableModel(columns, 0) {
         // Logo
         JPanel logo = new JPanel() {
             @Override
@@ -663,4 +698,206 @@ public class MainGUI extends JFrame {
         btn.setMinimumSize(new Dimension(80, 48));
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         return btn;
+    }
+
+     // ─────────────────────────────────────────────────
+    //  TABLE CARD Developed by Siham Desta
+    // ─────────────────────────────────────────────────
+    private JPanel buildTable() {
+        JPanel card = new CardPanel(16, BG_CARD);
+        card.setLayout(new BorderLayout());
+        card.setBorder(new EmptyBorder(20, 22, 20, 22));
+
+        // Header row
+        JPanel hdr = new JPanel(new BorderLayout());
+        hdr.setBackground(BG_CARD);
+        hdr.setBorder(new EmptyBorder(0, 0, 14, 0));
+
+        JPanel hl = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        hl.setBackground(BG_CARD);
+        // People icon drawn via Java2D
+        JPanel hIcon = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(ACCENT_BLUE);
+                int cx = getWidth() / 2, cy = getHeight() / 2;
+                // Back person
+                g2.setColor(new Color(ACCENT_BLUE.getRed(), ACCENT_BLUE.getGreen(), ACCENT_BLUE.getBlue(), 140));
+                g2.fillOval(cx + 1, cy - 9, 9, 9);
+                g2.fillRoundRect(cx - 1, cy + 1, 12, 9, 5, 5);
+                // Front person
+                g2.setColor(ACCENT_BLUE);
+                g2.fillOval(cx - 9, cy - 9, 9, 9);
+                g2.fillRoundRect(cx - 11, cy + 1, 12, 9, 5, 5);
+                g2.dispose();
+            }
+        };
+        hIcon.setPreferredSize(new Dimension(22, 22));
+        hIcon.setOpaque(false);
+        JLabel hTitl = new JLabel("All Contacts");
+        hTitl.setFont(FONT_SECTION);
+        hTitl.setForeground(TEXT_TITLE);
+        hl.add(hIcon);
+        hl.add(hTitl);
+
+        cntBadge = new JLabel("0 contacts");
+        cntBadge.setFont(FONT_BADGE);
+        cntBadge.setForeground(ACCENT_BLUE);
+        cntBadge.setOpaque(true);
+        cntBadge.setBackground(new Color(239, 246, 255));
+        cntBadge.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(
+                                new Color(191, 219, 254), 1),
+                        new EmptyBorder(5, 14, 5, 14)
+                ));
+
+        hdr.add(hl,       BorderLayout.WEST);
+        hdr.add(cntBadge, BorderLayout.EAST);
+
+        // Table model
+        String[] cols = {"#", "Name",
+                "Phone Number", "Status"};
+        tableModel = new DefaultTableModel(cols, 0) {
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
+        };
+
+        contactTable = new JTable(tableModel) {
+            @Override
+            public Component prepareRenderer(
+                    TableCellRenderer r, int row, int col) {
+                Component c = super.prepareRenderer(
+                        r, row, col);
+                if (!isRowSelected(row)) {
+                    c.setBackground(row % 2 == 0
+                            ? BG_TABLE_ROW : BG_TABLE_ALT);
+                } else {
+                    c.setBackground(BG_TABLE_SEL);
+                }
+                return c;
+            }
+        };
+
+        contactTable.setFont(FONT_TABLE);
+        contactTable.setForeground(TEXT_PRIMARY);
+        contactTable.setBackground(BG_TABLE_ROW);
+        contactTable.setSelectionBackground(BG_TABLE_SEL);
+        contactTable.setSelectionForeground(TEXT_PRIMARY);
+        contactTable.setRowHeight(56);
+        contactTable.setShowGrid(false);
+        contactTable.setIntercellSpacing(
+                new Dimension(0, 2));
+        contactTable.setSelectionMode(
+                ListSelectionModel.SINGLE_SELECTION);
+        contactTable.setFillsViewportHeight(true);
+
+        // Column widths
+        contactTable.getColumnModel()
+                .getColumn(0).setPreferredWidth(55);
+        contactTable.getColumnModel()
+                .getColumn(0).setMaxWidth(65);
+        contactTable.getColumnModel()
+                .getColumn(1).setPreferredWidth(300);
+        contactTable.getColumnModel()
+                .getColumn(2).setPreferredWidth(230);
+        contactTable.getColumnModel()
+                .getColumn(3).setPreferredWidth(120);
+
+        // Header
+        JTableHeader th = contactTable.getTableHeader();
+        th.setBackground(new Color(248, 250, 252));
+        th.setForeground(TEXT_MUTED);
+        th.setFont(FONT_TH);
+        th.setReorderingAllowed(false);
+        th.setBorder(BorderFactory.createMatteBorder(
+                0, 0, 2, 0, BORDER_COL));
+        th.setPreferredSize(new Dimension(0, 40));
+
+        // Custom renderers
+        contactTable.getColumnModel()
+                .getColumn(0).setCellRenderer(
+                        new IdxRenderer());
+        contactTable.getColumnModel()
+                .getColumn(1).setCellRenderer(
+                        new AvatarRenderer());
+        contactTable.getColumnModel()
+                .getColumn(2).setCellRenderer(
+                        new PhoneRenderer());
+        contactTable.getColumnModel()
+                .getColumn(3).setCellRenderer(
+                        new BadgeRenderer());
+
+        JScrollPane scroll =
+                new JScrollPane(contactTable);
+        scroll.setBorder(
+                BorderFactory.createLineBorder(
+                        BORDER_COL, 1));
+        scroll.getViewport()
+                .setBackground(BG_TABLE_ROW);
+
+        card.add(hdr,    BorderLayout.NORTH);
+        card.add(scroll, BorderLayout.CENTER);
+
+        JPanel wrap = new JPanel(new BorderLayout());
+        wrap.setBackground(BG_MAIN);
+        wrap.setBorder(new EmptyBorder(0, 28, 0, 28));
+        wrap.add(card, BorderLayout.CENTER);
+        return wrap;
+    }
+
+    // ─────────────────────────────────────────────────
+    //  STATUS BAR
+    // ─────────────────────────────────────────────────
+    private JPanel buildStatusBar() {
+        JPanel bar = new JPanel(new BorderLayout());
+        bar.setBackground(BG_CARD);
+        bar.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(
+                        1, 0, 0, 0, BORDER_COL),
+                new EmptyBorder(10, 28, 10, 28)
+        ));
+
+        statusLbl = new JLabel(
+                "\u25CF  Ready \u2014 all systems operational");
+        statusLbl.setFont(FONT_STATUS);
+        statusLbl.setForeground(ACCENT_GREEN);
+
+        // Database icon panel + label
+        JPanel dbPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 0));
+        dbPanel.setBackground(BG_CARD);
+        JPanel dbIcon = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                        RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(TEXT_MUTED);
+                g2.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                int cx = getWidth()/2, cy = getHeight()/2;
+                int dw = 14, dh = 4, dx = cx - dw/2;
+                g2.drawOval(dx, cy - 7, dw, dh);
+                g2.drawLine(dx, cy - 5, dx, cy + 5);
+                g2.drawLine(dx + dw, cy - 5, dx + dw, cy + 5);
+                g2.drawOval(dx, cy - 2, dw, dh);
+                g2.drawOval(dx, cy + 3, dw, dh);
+                g2.dispose();
+            }
+        };
+        dbIcon.setPreferredSize(new Dimension(18, 18));
+        dbIcon.setOpaque(false);
+        JLabel dbLbl = new JLabel("telephone_directory");
+        dbLbl.setFont(FONT_STATUS);
+        dbLbl.setForeground(TEXT_MUTED);
+        dbPanel.add(dbIcon);
+        dbPanel.add(dbLbl);
+
+        bar.add(statusLbl, BorderLayout.WEST);
+        bar.add(dbPanel,   BorderLayout.EAST);
+        return bar;
     }
