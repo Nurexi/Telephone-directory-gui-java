@@ -255,6 +255,13 @@ ps.executeQuery();  // for SELECT
 | `salsawit-ui-styling` | Salsawit | UI styling + UX polish |
 
 ---
+🚀 Future Improvements
+
+- Add user authentication (login system)
+- Export contacts to CSV file
+- Add profile pictures for contacts
+- Improve UI with modern design frameworks
+- Convert application to web or mobile version
 
 ## 📄 License
 
