@@ -23,6 +23,15 @@ application starts. It is built using **Java Swing** and follows
 backend logic layer with an interactive and user-friendly interface.
 
 ---
+ 🏗️ System Architecture
+
+The application follows a 3-layer architecture:
+
+- Presentation Layer → Java Swing (UI)
+- Business Logic Layer → ContactManager
+- Data Layer → MySQL Database
+
+This separation improves maintainability and scalability.
 
 ## ✨ Features
 
@@ -67,6 +76,12 @@ backend logic layer with an interactive and user-friendly interface.
 | Git + GitHub | Latest | Version control + collaboration |
 
 ---
+ 🔐 Security Considerations
+
+- Uses PreparedStatement to prevent SQL Injection
+- Input validation ensures correct and safe user data
+- Database credentials stored in config.properties file
+- Error handling prevents system crashes and data corruption
 
 ## 📁 Project Structure
 
