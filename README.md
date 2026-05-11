@@ -76,6 +76,12 @@ This separation improves maintainability and scalability.
 | Git + GitHub | Latest | Version control + collaboration |
 
 ---
+ 🔐 Security Considerations
+
+- Uses PreparedStatement to prevent SQL Injection
+- Input validation ensures correct and safe user data
+- Database credentials stored in config.properties file
+- Error handling prevents system crashes and data corruption
 
 ## 📁 Project Structure
 
