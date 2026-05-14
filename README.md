@@ -115,6 +115,7 @@ This separation improves maintainability and scalability.
 ┃ ┃     ├── handleUpdate()    — update contact handler
 ┃ ┃     ├── handleSearch()    — search contact handler
 ┃ ┃     └── refreshTable()    — reloads table from DB
+┃ ┃     ├── handleExport()    — export CSV handler
 ┃ ┃
 ┃ ┣ 📂 util
 ┃ ┃ ┗ 📄 ExportUtil.java
