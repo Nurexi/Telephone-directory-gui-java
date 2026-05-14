@@ -116,6 +116,9 @@ This separation improves maintainability and scalability.
 ┃ ┃     ├── handleSearch()    — search contact handler
 ┃ ┃     └── refreshTable()    — reloads table from DB
 ┃ ┃
+┃ ┣ 📂 util
+┃ ┃ ┗ 📄 ExportUtil.java
+┃ ┃     └── exportToCSV() — saves contacts to .csv file
 ┃ ┗ 📄 Main.java
 ┃       └── main() — launches GUI on EDT
 ┃
