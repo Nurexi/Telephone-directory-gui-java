@@ -47,6 +47,7 @@ This separation improves maintainability and scalability.
 | ⚠️ Error Handling | All errors shown via user-friendly popup dialogs |
 | 🎨 Professional UI | Colored buttons, styled table, live status bar |
 | 🖱️ Smart UX | Click any row to auto-fill input fields |
+| 📤 Export to CSV | Export all contacts to a CSV file with one click |
 
 ---
 
