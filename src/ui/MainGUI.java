@@ -2,7 +2,7 @@ package ui;
 
 import model.Contact;
 import service.ContactManager;
-
+import util.ExportUtil;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
@@ -86,6 +86,7 @@ public class MainGUI extends JFrame {
     private JButton updateBtn;
     private JButton deleteBtn;
     private JButton clearBtn;
+    private JButton exportBtn;
 
     // ── Table ─────────────────────────────────────────
     private DefaultTableModel tableModel;
@@ -457,6 +458,8 @@ public class MainGUI extends JFrame {
         btns.add(updateBtn);
         btns.add(deleteBtn);
         btns.add(clearBtn);
+        exportBtn = mkBtn("Export CSV", ACCENT_GREEN, false, "export");
+btns.add(exportBtn);
 
         btnsWrap.add(btns, BorderLayout.CENTER);
         card.add(btnsWrap);
@@ -855,6 +858,10 @@ public class MainGUI extends JFrame {
         deleteBtn.addActionListener(e -> handleDelete());
         updateBtn.addActionListener(e -> handleUpdate());
         searchBtn.addActionListener(e -> handleSearch());
+        exportBtn.addActionListener(e -> {
+    java.util.List<Contact> all = manager.getAllContacts();
+    ExportUtil.exportToCSV(this, all);
+});
         clearBtn.addActionListener(e  -> {
             clearFields();
             setStatus("\u25CF  Fields cleared",
