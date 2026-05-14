@@ -118,7 +118,8 @@ This separation improves maintainability and scalability.
 ┃ ┃
 ┃ ┣ 📂 util
 ┃ ┃ ┗ 📄 ExportUtil.java
-┃ ┃     └── exportToCSV() — saves contacts to .csv file
+┃ ┃   └── exportToCSV() — saves contacts to .csv file
+┃ ┃
 ┃ ┗ 📄 Main.java
 ┃       └── main() — launches GUI on EDT
 ┃
