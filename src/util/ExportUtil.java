@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+// Utility class for exporting contact data
+// Supports CSV format — compatible with Excel and Google Sheets
+// Developed by Eman Ahmed
 
 public class ExportUtil {
 
