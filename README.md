@@ -210,6 +210,7 @@ Right click Main.java → Run 'Main'
 | Successful add | ✅ "Contact added successfully." |
 | Successful update | ✅ "Contact updated successfully." |
 | Successful delete | ✅ "Contact deleted successfully." |
+| No contacts to export | ⚠️ "No contacts to export." |
 
 ---
 
