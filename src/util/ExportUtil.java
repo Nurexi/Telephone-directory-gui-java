@@ -24,6 +24,7 @@ public class ExportUtil {
 
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Save Contacts as CSV");
+        chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("CSV Files", "csv"));
         String timestamp = LocalDateTime.now()
                 .format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
         chooser.setSelectedFile(new java.io.File("contacts_" + timestamp + ".csv"));
