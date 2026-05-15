@@ -40,7 +40,9 @@ public class ExportUtil {
         try (FileWriter fw = new FileWriter(file)) {
             fw.write("Name,Phone Number\n");
             for (Contact c : contacts) {
-                fw.write(c.getName() + "," + c.getPhoneNumber() + "\n");
+                String name = c.getName().isEmpty() ? "Unknown" : c.getName();
+                String phone = c.getPhoneNumber().isEmpty() ? "N/A" : c.getPhoneNumber();
+                fw.write(name + "," + phone + "\n");
             }
             JOptionPane.showMessageDialog(parent,
                     "Exported " + contacts.size() + " contact(s) to:\n" + file.getAbsolutePath(),
