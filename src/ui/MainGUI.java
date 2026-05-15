@@ -444,7 +444,7 @@ public class MainGUI extends JFrame {
         btnsWrap.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
         btnsWrap.setMinimumSize(new Dimension(0, 48));
 
-        JPanel btns = new JPanel(new GridLayout(1, 5, 12, 0));
+        JPanel btns = new JPanel(new GridLayout(1, 6, 12, 0));
         btns.setBackground(BG_CARD);
 
         addBtn    = mkBtn("Add",    ACCENT_BLUE,  true,  "add");
@@ -459,7 +459,7 @@ public class MainGUI extends JFrame {
         btns.add(deleteBtn);
         btns.add(clearBtn);
         exportBtn = mkBtn("Export CSV", ACCENT_GREEN, false, "export");
-btns.add(exportBtn);
+        btns.add(exportBtn);
 
         btnsWrap.add(btns, BorderLayout.CENTER);
         card.add(btnsWrap);
