@@ -211,6 +211,7 @@ Right click Main.java → Run 'Main'
 | Successful update | ✅ "Contact updated successfully." |
 | Successful delete | ✅ "Contact deleted successfully." |
 | No contacts to export | ⚠️ "No contacts to export." |
+| Successful export | ✅ "Exported X contact(s) to file." |
 
 ---
 
