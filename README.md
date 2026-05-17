@@ -83,6 +83,17 @@ This separation improves maintainability and scalability.
 - Input validation ensures correct and safe user data
 - Database credentials stored in config.properties file
 - Error handling prevents system crashes and data corruption
+  
+  🧪 Validation Rules
+
+The system ensures data correctness before saving to the database:
+
+- Name field must contain only letters and spaces
+- Phone field must contain only numeric values
+- Empty fields are not allowed
+- Invalid inputs are blocked before database operations
+- Error messages are shown using popup dialogs (JOptionPane)
+These rules help maintain clean and consistent data in the system.
 
 ## 📁 Project Structure
 
