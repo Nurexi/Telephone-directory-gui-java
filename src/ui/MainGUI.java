@@ -918,6 +918,15 @@ public class MainGUI extends JFrame {
             err("Please fill in all required fields.");
             return;
         }
+         if (!isValidName(name)) {
+        err("Name must contain only letters and spaces.");
+        return; 
+        }
+         if (!isValidPhone(phone)) {
+        err("Phone must contain only numbers.");
+        return;
+    }
+
         if (manager.addContact(name, phone)) {
             ok("Contact added successfully.");
             lastVal.setText(name);
@@ -1096,6 +1105,25 @@ public class MainGUI extends JFrame {
         p.setMinimumSize(new Dimension(0, h));
         return p;
     }
+    private boolean isValidName(String name) {
+    for (int i = 0; i < name.length(); i++) {
+        char ch = name.charAt(i);
+        if (!Character.isLetter(ch) && ch != ' ') {
+            return false;
+        }
+    }
+    return true;
+}
+
+private boolean isValidPhone(String phone) {
+    for (int i = 0; i < phone.length(); i++) {
+        char ch = phone.charAt(i);
+        if (!Character.isDigit(ch)) {
+            return false;
+        }
+    }
+    return true;
+}
 
      // ─────────────────────────────────────────────────
     //  INNER — CardPanel (shadow + rounded)
