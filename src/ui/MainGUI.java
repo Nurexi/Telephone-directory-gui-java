@@ -885,6 +885,24 @@ public class MainGUI extends JFrame {
                         }
                     }
                 });
+                contactTable.addMouseListener(new java.awt.event.MouseAdapter() {
+    @Override
+    public void mouseClicked(java.awt.event.MouseEvent evt) {
+        if (evt.getClickCount() == 2) {
+            int row = contactTable.getSelectedRow();
+
+            if (row >= 0) {
+                String name = (String) tableModel.getValueAt(row, 1);
+                String phone = (String) tableModel.getValueAt(row, 2);
+
+                nameField.setText(name);
+                phoneField.setText(phone);
+
+                setStatus("● Selected: " + name, ACCENT_BLUE);
+            }
+        }
+    }
+});
     }
 
     // ─────────────────────────────────────────────────
