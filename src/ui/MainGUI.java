@@ -926,6 +926,11 @@ public class MainGUI extends JFrame {
         err("Phone must contain only numbers.");
         return;
     }
+    if (isDuplicatePhone(phone)) {
+    err("This phone number already exists.");
+    return;
+}
+
 
         if (manager.addContact(name, phone)) {
             ok("Contact added successfully.");
@@ -1123,6 +1128,16 @@ private boolean isValidPhone(String phone) {
         }
     }
     return true;
+}
+private boolean isDuplicatePhone(String phone) {
+    List<Contact> allContacts = manager.getAllContacts();
+
+    for (Contact c : allContacts) {
+        if (c.getPhoneNumber().equals(phone)) {
+            return true;
+        }
+    }
+    return false;
 }
 
      // ─────────────────────────────────────────────────
